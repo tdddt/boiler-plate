@@ -2,13 +2,33 @@ const express = require('express')
 const app = express()
 const port = 3000 
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://tdddt:rlarmswn1!@boiler-plate.ogokw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',{ //copy한 connection String
-    useNewUrlParser:true, useUnifiedTopology:true, useCreateIndex:true, useFindAndModify:false //에러 방지용
-}).then(()=>console.log('MongoDB Connected...')) //잘 연결되었다면 MongoDB Connected 출력
-  .catch(err=>console.log(err)) //연결에 실패했다면 error출력
+const bodyParser  = require('body-parser'); 
+
+const config = require('./config/key');
+
+const {User} = require("./models/User"); 
+
+//application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended:true}));
+//application/json
+app.use(bodyParser.json());
+
+
+mongoose.connect('config.mongoURI',{ 
+    useNewUrlParser:true, useUnifiedTopology:true, useCreateIndex:true, useFindAndModify:false 
+}).then(()=>console.log('MongoDB Connected...')) 
+  .catch(err=>console.log(err)) 
 
 app.get('/', (req, res) => { 
-  res.send('Hello World!')
+  res.send('Hello World!~~~')
+})
+
+app.post('/register',(req,res)=>{
+    const user = new User(req.body) /
+    user.save((err,doc)=>{ 
+        if(err) return res.json({success:false, err}) 
+        return res.status(200).json({success:true})
+    }) 
 })
 
 app.listen(port, () => { 
